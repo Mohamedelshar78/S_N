@@ -9,7 +9,9 @@ from tkinter import filedialog
 import Functions
 
 G = nx.DiGraph()
+pos = nx.random_layout(G)
 Matrix = list
+layoutTrree = 1
 
 def load_network(node_path, edges_path):
     print('loading network...')
@@ -93,7 +95,8 @@ def create_main_window():
     right_frame.pack(side="right", padx=20, pady=20)
 
     #add canvas to display graph
-    pos = nx.spring_layout(G)
+    global pos
+    global G
     fig, ax = plt.subplots(figsize=(12, 10))
     nx.draw(G, pos, with_labels=True, node_color='skyblue', node_size=1000, edge_color='gray', linewidths=1, font_size=10, ax=ax)
     plt.title("Graph")
@@ -164,10 +167,13 @@ def create_main_window():
     space = tk.Label(left_frame)
     space.grid(row=10, column=0)
 
-    fr_layout_button = tk.Button(left_frame, text="Apply Fruchterman-Reingold Layout")
+    fr_layout_button = tk.Button(left_frame, text=" Fruchterman Layout")
     fr_layout_button.grid(row=11, column=1)
 
-    tree_layout_button = tk.Button(left_frame, text="Apply Tree Layout")
+    random_layout_button = tk.Button(left_frame, text="Random Layout")
+    random_layout_button.grid(row=11, column=3)
+
+    tree_layout_button = tk.Button(left_frame, text="Tree Layout")
     tree_layout_button.grid(row=11, column=0)
     x = tk.Label(left_frame)
     x.grid(row=12, column=0)
@@ -276,11 +282,16 @@ def create_main_window():
         if any(node not in pos for node in G.nodes):
             print("Warning: Some nodes do not have positions assigned. Assigning positions using spring layout.")
             # Assign positions to missing nodes using spring layout
-            if fr_layout_button.bind :
-                new_positions = nx.fruchterman_reingold_layout(G)
+            if layoutTrree==2:
+                new_positions = nx.drawing.fruchterman_reingold_layout(G)
+                # Update the pos dictionary with the newly assigned positions for missing nodes
+                pos.update(new_positions)
+            elif layoutTrree==3:
+                new_positions = nx.spring_layout(G)
+                # Update the pos dictionary with the newly assigned positions for missing nodes
                 pos.update(new_positions)
             else:
-                new_positions = nx.spring_layout(G)
+                new_positions = nx.random_layout(G)
                 # Update the pos dictionary with the newly assigned positions for missing nodes
                 pos.update(new_positions)
 
@@ -322,13 +333,24 @@ def create_main_window():
         update_node_colors_and_labels()
 
     def apply_fr_layout():
+        global layoutTrree
+        layoutTrree=2
         global pos
-        pos=nx.fruchterman_reingold_layout(G)
+        pos=nx.drawing.layout.fruchterman_reingold_layout(G)
         update_node_colors_and_labels()
 
     def apply_tree_layout():
+        global layoutTrree
+        global pos
+        pos=nx.drawing.spring_layout(G,dim=3)
+        layoutTrree=3
         update_node_colors_and_labels()
-
+    def apply_tree_layout():
+        global layoutTrree
+        global pos
+        pos=nx.drawing.random_layout(G)
+        layoutTrree=1
+        update_node_colors_and_labels()
     def calculate_node_degrees():
         calculate_node_size_degrees(ax)
 
@@ -355,6 +377,7 @@ def create_main_window():
     submit_button.config(command=lambda: submit_changes())
     fr_layout_button.config(command=lambda: apply_fr_layout())
     tree_layout_button.config(command=lambda: apply_tree_layout())
+    random_layout_button.config(command=lambda: apply_tree_layout())
     root.mainloop()
 
 # Call the function to create the main window
