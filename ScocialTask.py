@@ -89,17 +89,16 @@ def create_main_window():
     root.title("Graph Viewer")
 
     left_frame = tk.Frame(root )
-    left_frame.pack(side="left", padx=20, pady=20,fill='both')
+    left_frame.pack(side="left", pady=5,fill='both', expand=True)
 
     right_frame = tk.Frame(root)
-    right_frame.pack(side="right", padx=20, pady=20)
+    right_frame.pack(side="right", pady=2,fill='both', expand=True)
 
     #add canvas to display graph
     global pos
     global G
-    fig, ax = plt.subplots(figsize=(12, 10))
+    fig, ax = plt.subplots(figsize=(15, 15))
     nx.draw(G, pos, with_labels=True, node_color='skyblue', node_size=1000, edge_color='gray', linewidths=1, font_size=10, ax=ax)
-    plt.title("Graph")
 
     canvas = FigureCanvasTkAgg(fig, master=right_frame)
     canvas.draw()
@@ -265,12 +264,12 @@ def create_main_window():
         calculate_metrics_wrapper()
 
     def browse_nodes():
-        node_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
+        node_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")],title="Select Nodes file")
         node_entry.delete(0, tk.END)
         node_entry.insert(0, node_path)
 
     def browse_edges():
-        edges_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
+        edges_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")],title="Select Edges file")
         edges_entry.delete(0, tk.END)
         edges_entry.insert(0, edges_path)
 
